@@ -226,9 +226,6 @@ async function stopScreenShare() {
   console.log('stop screen share fn');
   senders.find(sender => sender.track.kind === 'video').replaceTrack(localStream.getTracks().find(track => track.kind === 'video'));
 
-  //stop screen share track
-  document.querySelector('#localVideo').srcObject.getTracks().forEach(track => track.stop());
-
   document.querySelector('#localVideo').srcObject = localStream;
 
   document.querySelector('#startScreenShare').disabled = false;

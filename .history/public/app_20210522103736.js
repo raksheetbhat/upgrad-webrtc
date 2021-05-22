@@ -4,10 +4,8 @@ const configuration = {
   iceServers: [
     {
       urls: [
-        'turn:3.19.255.113'
+        'turn:3.19.255.113:3478'
       ],
-      username: 'test',
-      credential: 'pass123'
     },
   ],
   iceCandidatePoolSize: 10,
@@ -18,16 +16,12 @@ let localStream = null;
 let remoteStream = null;
 let roomDialog = null;
 let roomId = null;
-let senders = [];
 
 function init() {
   document.querySelector('#cameraBtn').addEventListener('click', openUserMedia);
   document.querySelector('#hangupBtn').addEventListener('click', hangUp);
   document.querySelector('#createBtn').addEventListener('click', createRoom);
   document.querySelector('#joinBtn').addEventListener('click', joinRoom);
-  document.querySelector('#startScreenShare').addEventListener('click', openDisplayMedia);
-  document.querySelector('#stopScreenShare').addEventListener('click', stopScreenShare);
-
   roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
 }
 
@@ -43,7 +37,7 @@ async function createRoom() {
   registerPeerConnectionListeners();
 
   localStream.getTracks().forEach(track => {
-    senders.push(peerConnection.addTrack(track, localStream));
+    peerConnection.addTrack(track, localStream);
   });
 
   // Code for collecting ICE candidates below
@@ -202,37 +196,6 @@ async function openUserMedia(e) {
   document.querySelector('#joinBtn').disabled = false;
   document.querySelector('#createBtn').disabled = false;
   document.querySelector('#hangupBtn').disabled = false;
-  document.querySelector('#startScreenShare').disabled = false;
-}
-
-async function openDisplayMedia() {
-  const displayStream = await navigator.mediaDevices.getDisplayMedia();
-
-  senders.find(sender => sender.track.kind === 'video').replaceTrack(displayStream.getTracks()[0]);
-
-  document.querySelector('#localVideo').srcObject = displayStream;
-
-  document.querySelector('#localVideo').srcObject.getTracks()[0].onended = (e) => {
-    console.log('on ended called', e);
-
-    stopScreenShare();
-  }
-
-  document.querySelector('#startScreenShare').disabled = true;
-  document.querySelector('#stopScreenShare').disabled = false;
-}
-
-async function stopScreenShare() {
-  console.log('stop screen share fn');
-  senders.find(sender => sender.track.kind === 'video').replaceTrack(localStream.getTracks().find(track => track.kind === 'video'));
-
-  //stop screen share track
-  document.querySelector('#localVideo').srcObject.getTracks().forEach(track => track.stop());
-
-  document.querySelector('#localVideo').srcObject = localStream;
-
-  document.querySelector('#startScreenShare').disabled = false;
-  document.querySelector('#stopScreenShare').disabled = true;
 }
 
 async function hangUp(e) {

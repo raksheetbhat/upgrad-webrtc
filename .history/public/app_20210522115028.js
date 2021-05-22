@@ -212,22 +212,12 @@ async function openDisplayMedia() {
 
   document.querySelector('#localVideo').srcObject = displayStream;
 
-  document.querySelector('#localVideo').srcObject.getTracks()[0].onended = (e) => {
-    console.log('on ended called', e);
-
-    stopScreenShare();
-  }
-
   document.querySelector('#startScreenShare').disabled = true;
   document.querySelector('#stopScreenShare').disabled = false;
 }
 
 async function stopScreenShare() {
-  console.log('stop screen share fn');
   senders.find(sender => sender.track.kind === 'video').replaceTrack(localStream.getTracks().find(track => track.kind === 'video'));
-
-  //stop screen share track
-  document.querySelector('#localVideo').srcObject.getTracks().forEach(track => track.stop());
 
   document.querySelector('#localVideo').srcObject = localStream;
 

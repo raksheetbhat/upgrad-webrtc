@@ -25,9 +25,6 @@ function init() {
   document.querySelector('#hangupBtn').addEventListener('click', hangUp);
   document.querySelector('#createBtn').addEventListener('click', createRoom);
   document.querySelector('#joinBtn').addEventListener('click', joinRoom);
-  document.querySelector('#startScreenShare').addEventListener('click', openDisplayMedia);
-  document.querySelector('#stopScreenShare').addEventListener('click', stopScreenShare);
-
   roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
 }
 
@@ -212,27 +209,8 @@ async function openDisplayMedia() {
 
   document.querySelector('#localVideo').srcObject = displayStream;
 
-  document.querySelector('#localVideo').srcObject.getTracks()[0].onended = (e) => {
-    console.log('on ended called', e);
-
-    stopScreenShare();
-  }
-
   document.querySelector('#startScreenShare').disabled = true;
   document.querySelector('#stopScreenShare').disabled = false;
-}
-
-async function stopScreenShare() {
-  console.log('stop screen share fn');
-  senders.find(sender => sender.track.kind === 'video').replaceTrack(localStream.getTracks().find(track => track.kind === 'video'));
-
-  //stop screen share track
-  document.querySelector('#localVideo').srcObject.getTracks().forEach(track => track.stop());
-
-  document.querySelector('#localVideo').srcObject = localStream;
-
-  document.querySelector('#startScreenShare').disabled = false;
-  document.querySelector('#stopScreenShare').disabled = true;
 }
 
 async function hangUp(e) {
