@@ -135,7 +135,7 @@ async function joinRoomById(roomId) {
     peerConnection = new RTCPeerConnection(configuration);
     registerPeerConnectionListeners();
     localStream.getTracks().forEach(track => {
-      peerConnection.addTrack(track, localStream);
+      senders.push(peerConnection.addTrack(track, localStream));
     });
 
     // Code for collecting ICE candidates below
